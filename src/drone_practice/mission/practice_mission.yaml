@@ -1,0 +1,20 @@
+mission:
+  frame: "map"
+  takeoff_altitude: 2.5
+  path_file: "practice_path.csv"
+
+  waypoints:
+    - id: WP1
+      position: {x: 3.0, y: 0.0, z: 2.5}
+      tolerance: 0.5
+    - id: WP2
+      position: {x: 5.0, y: 2.0, z: 2.5}
+      tolerance: 0.5
+    - id: WP3
+      position: {x: 8.0, y: 5.0, z: 2.5}
+      tolerance: 0.5
+
+  landing_pad:
+    position: {x: 12.0, y: 5.0, z: 0.0}
+    pad_radius: 1.0
+    precision_radius: 0.15

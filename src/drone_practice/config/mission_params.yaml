@@ -1,0 +1,78 @@
+# ----------------------------------------------------------------------------
+# drone_mission parameters (loaded onto the mission_node private namespace)
+# ----------------------------------------------------------------------------
+
+# --- mission geometry -------------------------------------------------------
+cruise_altitude: 2.5        # [m] constant flight altitude (rule: hold 2.5 m)
+takeoff_altitude: 2.5       # [m] target altitude for the takeoff phase
+arena_limit: 25.0           # [m] +/- bound; mission aborts if exceeded
+
+# --- waypoint / goal tolerances --------------------------------------------
+waypoint_radius: 0.5        # [m] path tracking corridor (rule: pass within 0.5 m)
+goal_tolerance: 0.35        # [m] horizontal distance to final point to start landing
+takeoff_reached_tol: 0.15   # [m] altitude error to consider takeoff complete
+
+# --- control mode -----------------------------------------------------------
+# 'position' = carrot position setpoints: PX4 position loop holds firmly so the
+#   drone does NOT drift/coast into obstacles (recommended). 'velocity' = legacy.
+control_mode: "position"
+carrot_distance: 0.8      # [m] how far ahead to place the position target
+min_carrot: 0.25            # [m] keep creeping through tight gaps
+mpc_xy_cruise: 1.0       # [m/s] PX4 horizontal cruise cap (gentle, drift-free)
+mpc_xy_vel_max: 2.0         # [m/s] PX4 horizontal max speed cap
+
+# --- Pure Pursuit -----------------------------------------------------------
+lookahead_distance: 0.9     # [m] lookahead arc length on the path
+cruise_speed: 1.2           # [m/s] (velocity mode only) nominal horizontal speed
+min_speed: 0.35             # [m/s] (velocity mode only) floor near obstacles/goal
+
+# --- obstacle-avoidance backend ---------------------------------------------
+# 'vfh' = Vector Field Histogram (with position-carrot control, default).
+# 'dwa' = Dynamic Window Approach (dynamics-aware velocity control; smoother
+#         through clutter, naturally drift-free). Switch and compare.
+obstacle_avoidance: "vfh"
+
+# --- DWA (used when obstacle_avoidance: dwa) ---------------------------------
+dwa_max_speed: 1.0          # [m/s] planner speed cap
+dwa_max_accel: 2.0          # [m/s^2] accel limit (sets the dynamic window width)
+dwa_window_time: 0.5        # [s] reachable-velocity horizon
+dwa_predict_time: 1.2       # [s] trajectory rollout horizon
+dwa_dt_sim: 0.1             # [s] rollout step
+dwa_v_samples: 7            # velocity samples per axis (7x7 grid)
+dwa_active_distance: 5.0    # [m] consider obstacles within this range (<= 10)
+dwa_heading_weight: 0.8     # score: align with Pure-Pursuit goal heading
+dwa_clearance_weight: 0.35  # score: keep distance from obstacles
+dwa_velocity_weight: 0.2    # score: prefer making progress
+
+# --- VFH obstacle avoidance -------------------------------------------------
+vfh_num_bins: 72            # polar histogram sectors (5 deg each)
+vfh_threshold: 2.0          # binary free/blocked threshold on histogram density
+vfh_robot_radius: 0.30      # [m] drone half-span
+vfh_safety_distance: 0.35   # [m] extra clearance added to obstacles
+vfh_active_distance: 5.0    # [m] only consider returns closer than this (<= 10)
+vfh_min_gap_rad: 0.35       # [rad] narrowest gap the drone is allowed to enter
+vfh_clearance_cone_rad: 0.26  # [rad] half-cone used to measure forward clearance
+vfh_hysteresis_weight: 0.35 # commit to a side of an obstacle (anti limit-cycle)
+max_steer_rate: 2.5         # [rad/s] heading slew limit (smooths avoidance)
+slow_down_clearance: 1.8    # [m] start slowing when clearance falls below this
+emergency_stop_clearance: 0.5 # [m] hold position only if obstacle this close
+
+# --- altitude / yaw control -------------------------------------------------
+kp_altitude: 1.2            # P gain: vz = kp * (target_alt - z)
+max_vz: 0.8                 # [m/s] vertical speed clamp
+yaw_mode: "fixed"           # "fixed" (hold 0, sideways flight, 360 lidar) or "travel"
+yaw_slew_rate: 1.0          # [rad/s] max yaw command change when yaw_mode == travel
+
+# --- landing ----------------------------------------------------------------
+land_descend_speed: 0.4     # [m/s] descent rate over the pad before AUTO.LAND
+land_settle_radius: 0.12    # [m] center tightly over pad before AUTO.LAND (precision)
+land_use_auto_land: true    # true: switch to AUTO.LAND once centred & low
+
+# --- loop / interface -------------------------------------------------------
+control_rate: 20.0          # [Hz] offboard setpoint stream rate (>2 Hz required)
+scan_topic: "/scan"
+
+# --- SITL failsafe ----------------------------------------------------------
+# SITL has no RC; disable RC/datalink-loss failsafe so OFFBOARD can hold.
+# (autopilot config, not manual piloting). Set false on real hardware.
+disable_rc_failsafe: true

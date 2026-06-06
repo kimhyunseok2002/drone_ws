@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="x" default="0"/>
+  <arg name="y" default="0"/>
+  <arg name="z" default="0.1"/>
+  <arg name="R" default="0"/>
+  <arg name="P" default="0"/>
+  <arg name="Y" default="0"/>
+  <arg name="vehicle" default="iris"/>
+  <arg name="world" default="$(find drone_practice)/worlds/practice.world"/>
+  <arg name="sdf" default="$(find drone_practice)/models/iris_with_sensors/iris.sdf"/>
+
+  <env name="GAZEBO_MODEL_PATH" value="$(find drone_practice)/models:$(optenv GAZEBO_MODEL_PATH)"/>
+
+  <include file="/home/qwer/PX4-Autopilot/launch/mavros_posix_sitl.launch">
+    <arg name="x"       value="$(arg x)"/>
+    <arg name="y"       value="$(arg y)"/>
+    <arg name="z"       value="$(arg z)"/>
+    <arg name="R"       value="$(arg R)"/>
+    <arg name="P"       value="$(arg P)"/>
+    <arg name="Y"       value="$(arg Y)"/>
+    <arg name="vehicle" value="$(arg vehicle)"/>
+    <arg name="world"   value="$(arg world)"/>
+    <arg name="sdf"     value="$(arg sdf)"/>
+  </include>
+
+</launch>

@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!--
+  Autonomous mission launch for the DISTRIBUTED drone_practice workspace.
+
+  Evaluation model (per announcement): only the world file and the CSV are
+  swapped in-place; their names/locations stay the same. This launch therefore
+  reads the FIXED paths
+      worlds/practice.world      and      mission/practice_path.csv
+  so that replacing those two files is all that's needed - nothing here changes.
+
+  Run:
+      # source PX4 + workspace env first (see launch/setup_px4_env.sh / README)
+      roslaunch drone_practice mission.launch                 # GUI, VFH
+      roslaunch drone_practice mission.launch avoidance:=dwa  # use DWA
+      roslaunch drone_practice mission.launch gui:=false      # headless
+-->
+<launch>
+  <arg name="gui"         default="true"/>
+  <arg name="rviz"        default="false"/>
+  <arg name="interactive" default="false"/>          <!-- false = PX4 daemon (-d), headless-safe -->
+  <arg name="avoidance"   default=""/>               <!-- ''=yaml default | vfh | dwa -->
+  <arg name="world"       default="$(find drone_practice)/worlds/practice.world"/>
+  <arg name="sdf"         default="$(find drone_practice)/models/iris_2d_lidar/iris_2d_lidar.sdf"/>
+  <arg name="path_csv"    default="$(find drone_practice)/mission/practice_path.csv"/>
+
+  <!-- 1) PX4 SITL + Gazebo Classic (eval world) + iris_2d_lidar + MAVROS.
+          vehicle:=iris keeps stock iris physics; the 2D LiDAR is added via sdf. -->
+  <include file="$(find px4)/launch/mavros_posix_sitl.launch">
+    <arg name="world"       value="$(arg world)"/>
+    <arg name="sdf"         value="$(arg sdf)"/>
+    <arg name="vehicle"     value="iris"/>
+    <arg name="gui"         value="$(arg gui)"/>
+    <arg name="interactive" value="$(arg interactive)"/>
+    <arg name="x" value="0"/>
+    <arg name="y" value="0"/>
+    <arg name="z" value="0"/>
+  </include>
+
+  <!-- 2) Mission controller: Pure Pursuit + VFH/DWA -> precision landing -->
+  <node pkg="drone_practice" type="mission_node.py" name="mission_node" output="screen">
+    <rosparam command="load" file="$(find drone_practice)/config/mission_params.yaml"/>
+    <param name="path_csv" value="$(arg path_csv)"/>
+    <param name="obstacle_avoidance" value="$(arg avoidance)"
+           unless="$(eval arg('avoidance')=='')"/>
+  </node>
+
+  <!-- 3) Optional RViz -->
+  <node if="$(arg rviz)" pkg="rviz" type="rviz" name="rviz"/>
+</launch>

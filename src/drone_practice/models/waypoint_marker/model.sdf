@@ -1,0 +1,21 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <model name='waypoint_marker'>
+    <static>true</static>
+    <link name='link'>
+      <visual name='visual'>
+        <geometry>
+          <sphere><radius>0.5</radius></sphere>
+        </geometry>
+        <material>
+          <ambient>0.2 0.6 1.0 0.35</ambient>
+          <diffuse>0.2 0.6 1.0 0.35</diffuse>
+          <specular>0.1 0.1 0.1 1</specular>
+        </material>
+        <transparency>0.6</transparency>
+        <cast_shadows>false</cast_shadows>
+      </visual>
+      <!-- collision 없음 → 드론이 통과 가능, 센서에도 인식 안 됨 -->
+    </link>
+  </model>
+</sdf>

@@ -1,0 +1,16 @@
+# catkin build artifacts
+build/
+devel/
+install/
+logs/
+.catkin_tools/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# editor / OS
+*.swp
+*~
+.DS_Store

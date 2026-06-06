@@ -12,8 +12,8 @@ PX4 SITL 자율 비행 기말 프로젝트 워크스페이스 (KAU).
 
 ## 빌드 & 실행
 ```bash
-cd ~/Downloads/drone_ws/drone_ws
-catkin_make
+git clone https://github.com/kimhyunseok2002/drone_ws.git
+cd drone_ws && catkin_make 
 source devel/setup.bash
 source src/drone_practice/launch/setup_px4_env.sh      # PX4 env + 모델 경로
 roslaunch drone_practice mission.launch                # GUI, VFH

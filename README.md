@@ -16,8 +16,8 @@ git clone https://github.com/kimhyunseok2002/drone_ws.git
 cd drone_ws && catkin_make 
 source devel/setup.bash
 source src/drone_practice/launch/setup_px4_env.sh      # PX4 env + 모델 경로
-roslaunch drone_practice mission.launch                # GUI, VFH
-# roslaunch drone_practice mission.launch avoidance:=dwa
+roslaunch drone_practice mission.launch                # VFH알고리즘
+roslaunch drone_practice mission.launch avoidance:=dwa #DWA알고리즘
 # roslaunch drone_practice mission.launch gui:=false   # 헤드리스
 ```
 

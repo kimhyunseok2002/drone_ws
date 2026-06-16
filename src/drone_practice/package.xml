@@ -69,6 +69,10 @@
   <exec_depend>mavros</exec_depend>
   <exec_depend>mavros_extras</exec_depend>
   <exec_depend>gazebo_ros</exec_depend>
+  <!-- vision-guided precision landing (down camera -> red-pad pixel servo) -->
+  <depend>cv_bridge</depend>
+  <exec_depend>gazebo_plugins</exec_depend>
+  <exec_depend>python3-opencv</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

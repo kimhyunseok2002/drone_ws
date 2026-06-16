@@ -4,7 +4,7 @@
 **이륙 → 경로 추종(Pure Pursuit) → 장애물 회피(VFH / DWA, 2D LiDAR 1개) → 정밀 착륙.**
 
 - OS Ubuntu 20.04 / ROS Noetic / Gazebo Classic 11 / PX4 **v1.13.3** SITL / MAVROS
-- 기체: stock `iris` + **2D LiDAR 1개**(360°, 최대 10 m, `/scan`) — 카메라 0대
+- 기체: stock `iris` + **2D LiDAR 1개**(360°, 최대 10 m, `/scan`) + **하단 카메라 1개**(`/landing_cam/image_raw`)
 - 경로 추종: **Pure Pursuit** / 장애물 회피: **VFH**(기본) 또는 **DWA** (전환 가능)
 
 ---
@@ -34,7 +34,9 @@ source src/drone_practice/launch/setup_px4_env.sh   # PX4 env + 모델 경로
 
 # 3) 실행
 roslaunch drone_practice mission.launch                 # GUI, VFH(기본)
-roslaunch drone_practice mission.launch avoidance:=dwa  # DWA 사용
+roslaunch drone_practice mission.launch avoidance:=dwa  # DWA
+roslaunch drone_practice mission.launch avoidance:=fgm  # Follow-the-Gap
+roslaunch drone_practice mission.launch avoidance:=mppi # MPPI
 roslaunch drone_practice mission.launch gui:=false      # 헤드리스(빠른 확인)
 ```
 
@@ -89,13 +91,13 @@ drone_practice/
 ---
 
 ## 규정 준수
-- 전 구간 자율(OFFBOARD), 수동 입력 없음 · 카메라 0대 · LiDAR 탐지 10 m
+- 전 구간 자율(OFFBOARD), 수동 입력 없음 · 하단 카메라(정밀착륙 전용) · LiDAR 탐지 10 m
 - stock iris 물리 그대로 · 회피는 수평만(고도 유지) · 제공 world/path 무수정(인자로만 사용)
 
 ## 주요 파라미터 (`config/mission_params.yaml`)
 | 파라미터 | 기본 | 의미 |
 |---|---|---|
-| `obstacle_avoidance` | vfh | `vfh` 또는 `dwa` |
+| `obstacle_avoidance` | vfh | `vfh` / `dwa` / `fgm` / `mppi` |
 | `cruise_altitude` | 2.5 | 순항 고도 [m] |
 | `mpc_xy_cruise` | 0.8 | 수평 순항 속도 [m/s] |
 | `carrot_distance` | 1.0 | (VFH) 위치 캐럿 전방 거리 [m] |

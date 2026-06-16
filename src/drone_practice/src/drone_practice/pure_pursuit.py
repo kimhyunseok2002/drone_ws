@@ -57,6 +57,23 @@ class PurePursuit(object):
         self._closest_idx = best_i
         return best_i, best_d
 
+    def far_target(self, pos, lookahead):
+        """Return a path point ~`lookahead` m ahead of the current closest point.
+
+        Stable path-based goal (does not advance the cursor) — useful for planners
+        like MPPI that need a goal roughly a horizon-distance ahead. Call after
+        compute() so the closest-point cursor is up to date.
+        """
+        if not self._path:
+            return pos
+        n = len(self._path)
+        j = self._closest_idx
+        while j < n:
+            if dist(pos, self._path[j]) >= lookahead:
+                return self._path[j]
+            j += 1
+        return self._path[-1]
+
     def compute(self, pos):
         """Return a dict with the lookahead target and desired heading.
 

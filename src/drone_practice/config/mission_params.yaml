@@ -44,6 +44,23 @@ dwa_heading_weight: 0.8     # score: align with Pure-Pursuit goal heading
 dwa_clearance_weight: 0.35  # score: keep distance from obstacles
 dwa_velocity_weight: 0.2    # score: prefer making progress
 
+# --- FGM (Follow-the-Gap, used when obstacle_avoidance: fgm) -----------------
+fgm_active_distance: 5.0     # [m] consider obstacles within this range (<= 10)
+fgm_min_gap_rad: 0.35       # [rad] narrowest gap the drone may enter
+
+# --- MPPI (Model Predictive Path Integral, used when obstacle_avoidance: mppi)
+mppi_horizon: 20            # rollout steps
+mppi_samples: 300           # sampled trajectories per cycle
+mppi_dt: 0.1               # [s] rollout step
+mppi_lambda: 1.0           # softmax temperature
+mppi_noise_sigma: 0.35     # [m/s] control sampling noise
+mppi_max_speed: 1.0        # [m/s] speed cap
+mppi_active_distance: 5.0   # [m] obstacle consideration range
+mppi_repel_distance: 1.5    # [m] only repel obstacles within this range
+mppi_w_obstacle: 40.0      # cost weight: obstacle proximity/collision
+mppi_w_goal: 4.0           # cost weight: distance to projected goal
+mppi_goal_lookahead: 2.5    # [m] path point ahead used as MPPI goal
+
 # --- VFH obstacle avoidance -------------------------------------------------
 vfh_num_bins: 72            # polar histogram sectors (5 deg each)
 vfh_threshold: 2.0          # binary free/blocked threshold on histogram density
@@ -67,6 +84,25 @@ yaw_slew_rate: 1.0          # [rad/s] max yaw command change when yaw_mode == tr
 land_descend_speed: 0.4     # [m/s] descent rate over the pad before AUTO.LAND
 land_settle_radius: 0.12    # [m] center tightly over pad before AUTO.LAND (precision)
 land_use_auto_land: true    # true: switch to AUTO.LAND once centred & low
+
+# --- vision precision landing (down camera + red-pad pixel servo) -----------
+# In LAND, a downward camera detects the red landing-pad target and the drone
+# servos to centre it in the image before descending. If the pad is never seen
+# (camera/vision unavailable), it falls back to position-based landing.
+vision_landing: true        # enable pixel-based alignment in LAND
+camera_topic: "/landing_cam/image_raw"  # down-camera image (from iris_2d_lidar.sdf)
+vision_kp: 0.9              # [m/s per norm-error] horizontal servo gain
+vision_max_speed: 0.6       # [m/s] horizontal servo speed cap
+vision_align_tol: 0.08      # [norm] centred-enough (frac of half-image) to descend
+vision_descend_speed: 0.35  # [m/s] descent rate while centred over the pad
+vision_handoff_alt: 0.35    # [m] altitude to hand off to AUTO.LAND for touchdown
+vision_lost_timeout: 1.0    # [s] treat detection as lost if older than this
+vision_min_area: 80.0       # [px^2] reject red blobs smaller than this (noise)
+vision_fallback_after: 8.0  # [s] if pad never acquired in LAND -> position landing
+vision_sign_x: -1.0         # image->world axis sign (flip if servo diverges in sim)
+vision_sign_y: -1.0
+vision_debug: true          # publish an annotated image (centroid + error) to view
+vision_debug_topic: "/landing_cam/debug"  # open in rqt_image_view
 
 # --- loop / interface -------------------------------------------------------
 control_rate: 20.0          # [Hz] offboard setpoint stream rate (>2 Hz required)

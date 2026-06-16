@@ -4,8 +4,8 @@ PX4 SITL 자율 비행 기말 프로젝트 워크스페이스 (KAU).
 **이륙 → 경로 추종(Pure Pursuit) → 장애물 회피(VFH / DWA, 2D LiDAR 1개) → 정밀 착륙.**
 
 - Ubuntu 20.04 · ROS Noetic · Gazebo Classic 11 · PX4 **v1.13.3** SITL · MAVROS
-- 기체: stock `iris` + **2D LiDAR 1개**(360°, 10 m, `/scan`) · 카메라 0대
-- 경로 추종 **Pure Pursuit** · 회피 **VFH(기본)** 또는 **DWA** (`avoidance:=dwa`)
+- 기체: stock `iris` + **2D LiDAR 1개**(360°, 10 m, `/scan`) + **하단 카메라 1개**(`/landing_cam/image_raw`, 비전 정밀착륙용)
+- 경로 추종 **Pure Pursuit** · 회피 **VFH / DWA / FGM / MPPI** 4종 전환 (`avoidance:=dwa|fgm|mppi`)
 
 > 코드/문서 전체는 패키지 안에 있습니다 → [`src/drone_practice/`](src/drone_practice/)
 > 자세한 설명: [`src/drone_practice/README.md`](src/drone_practice/README.md)
@@ -16,8 +16,8 @@ git clone https://github.com/kimhyunseok2002/drone_ws.git
 cd drone_ws && catkin_make 
 source devel/setup.bash
 source src/drone_practice/launch/setup_px4_env.sh      # PX4 env + 모델 경로
-roslaunch drone_practice mission.launch                # VFH알고리즘
-roslaunch drone_practice mission.launch avoidance:=dwa #DWA알고리즘
+roslaunch drone_practice mission.launch                # VFH알고리즘 (기본)
+roslaunch drone_practice mission.launch avoidance:=dwa # DWA알고리즘 (vfh|dwa|fgm|mppi)
 # roslaunch drone_practice mission.launch gui:=false   # 헤드리스
 ```
 
